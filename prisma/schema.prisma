@@ -8,7 +8,26 @@ datasource db {
 }
 
 model Todo {
-  id        Int      @id @default(autoincrement())
-  title     String
-  createdAt DateTime  @default(now())
+  id                Int      @id @default(autoincrement())
+  title             String
+  createdAt         DateTime @default(now())
+  dueDate           DateTime?
+  duration          Int      @default(1) // Duration in days
+  earliestStartDate DateTime?
+  isOnCriticalPath  Boolean  @default(false)
+  
+  // Dependencies relationship
+  dependencies     TaskDependency[] @relation("TaskDependencies")
+  dependentTasks   TaskDependency[] @relation("DependentTasks")
+}
+
+model TaskDependency {
+  id          Int  @id @default(autoincrement())
+  taskId      Int  // The task that depends on another
+  dependsOnId Int  // The task it depends on
+  
+  task        Todo @relation("TaskDependencies", fields: [taskId], references: [id], onDelete: Cascade)
+  dependsOn   Todo @relation("DependentTasks", fields: [dependsOnId], references: [id], onDelete: Cascade)
+  
+  @@unique([taskId, dependsOnId])
 }
