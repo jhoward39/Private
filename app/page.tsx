@@ -1,5 +1,5 @@
-"use client"
-import { useState, useEffect } from 'react';
+"use client";
+import { useState, useEffect } from "react";
 
 interface Todo {
   id: number;
@@ -33,13 +33,17 @@ interface DependencyInfo {
 }
 
 export default function Home() {
-  const [newTodo, setNewTodo] = useState('');
-  const [newDueDate, setNewDueDate] = useState('');
-  const [newDuration, setNewDuration] = useState('1');
+  const [newTodo, setNewTodo] = useState("");
+  const [newDueDate, setNewDueDate] = useState("");
+  const [newDuration, setNewDuration] = useState("1");
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [dependencyInfo, setDependencyInfo] = useState<DependencyInfo | null>(null);
+  const [dependencyInfo, setDependencyInfo] = useState<DependencyInfo | null>(
+    null,
+  );
   const [selectedTask, setSelectedTask] = useState<number | null>(null);
-  const [selectedDependency, setSelectedDependency] = useState<number | null>(null);
+  const [selectedDependency, setSelectedDependency] = useState<number | null>(
+    null,
+  );
   const [showDependencies, setShowDependencies] = useState(false);
 
   useEffect(() => {
@@ -49,69 +53,69 @@ export default function Home() {
 
   const fetchTodos = async () => {
     try {
-      const res = await fetch('/api/todos');
+      const res = await fetch("/api/todos");
       const data = await res.json();
       setTodos(data);
     } catch (error) {
-      console.error('Failed to fetch todos:', error);
+      console.error("Failed to fetch todos:", error);
     }
   };
 
   const fetchDependencyInfo = async () => {
     try {
-      const res = await fetch('/api/todos/dependencies');
+      const res = await fetch("/api/todos/dependencies");
       if (res.ok) {
         const data = await res.json();
         setDependencyInfo(data);
       }
     } catch (error) {
-      console.error('Failed to fetch dependency info:', error);
+      console.error("Failed to fetch dependency info:", error);
     }
   };
 
   const handleAddTodo = async () => {
     if (!newTodo.trim()) return;
     try {
-      await fetch('/api/todos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+      await fetch("/api/todos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           title: newTodo,
           dueDate: newDueDate || null,
-          duration: parseInt(newDuration) || 1
+          duration: parseInt(newDuration) || 1,
         }),
       });
-      setNewTodo('');
-      setNewDueDate('');
-      setNewDuration('1');
+      setNewTodo("");
+      setNewDueDate("");
+      setNewDuration("1");
       fetchTodos();
       fetchDependencyInfo();
     } catch (error) {
-      console.error('Failed to add todo:', error);
+      console.error("Failed to add todo:", error);
     }
   };
 
   const handleDeleteTodo = async (id: number) => {
     try {
       await fetch(`/api/todos/${id}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
       fetchTodos();
       fetchDependencyInfo();
     } catch (error) {
-      console.error('Failed to delete todo:', error);
+      console.error("Failed to delete todo:", error);
     }
   };
 
   const handleAddDependency = async () => {
     if (!selectedTask || !selectedDependency) return;
     try {
-      const res = await fetch('/api/todos/dependencies', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+      const res = await fetch("/api/todos/dependencies", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           taskId: selectedTask,
-          dependsOnId: selectedDependency
+          dependsOnId: selectedDependency,
         }),
       });
       if (!res.ok) {
@@ -124,21 +128,24 @@ export default function Home() {
       fetchTodos();
       fetchDependencyInfo();
     } catch (error) {
-      console.error('Failed to add dependency:', error);
+      console.error("Failed to add dependency:", error);
     }
   };
 
-  const handleRemoveDependency = async (taskId: number, dependsOnId: number) => {
+  const handleRemoveDependency = async (
+    taskId: number,
+    dependsOnId: number,
+  ) => {
     try {
-      await fetch('/api/todos/dependencies', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
+      await fetch("/api/todos/dependencies", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ taskId, dependsOnId }),
       });
       fetchTodos();
       fetchDependencyInfo();
     } catch (error) {
-      console.error('Failed to remove dependency:', error);
+      console.error("Failed to remove dependency:", error);
     }
   };
 
@@ -148,48 +155,56 @@ export default function Home() {
   };
 
   const formatDate = (dateString?: string) => {
-    if (!dateString) return '';
+    if (!dateString) return "";
     return new Date(dateString).toLocaleDateString();
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 p-4">
+    <div className="min-h-screen bg-[#FFFFF8]">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold text-white mb-4">Advanced Todo App</h1>
-          <p className="text-white text-lg">Task Management with Dependencies & Critical Path Analysis</p>
+          <h1 className="text-5xl text-black m-4">Advanced Todo App</h1>
+          <p className="text-black text-lg">
+            Task Management with Dependencies & Critical Path Analysis
+          </p>
         </div>
 
         {/* Add Todo Form */}
-        <div className="bg-white rounded-lg shadow-xl p-6 mb-8">
-          <h2 className="text-2xl font-bold mb-4 text-gray-800">Add New Task</h2>
+        <div className="rounded-lg  p-6 mb-8">
+          <h2 className="text-2xl  mb-4 text-gray-800">Add New Task</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Task Title</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Task Title
+              </label>
               <input
                 type="text"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:border-green-900 focus:outline-none bg-transparent"
                 placeholder="Enter task title..."
                 value={newTodo}
                 onChange={(e) => setNewTodo(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleAddTodo()}
+                onKeyPress={(e) => e.key === "Enter" && handleAddTodo()}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Due Date
+              </label>
               <input
                 type="date"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:border-green-900 focus:outline-none bg-transparent"
                 value={newDueDate}
                 onChange={(e) => setNewDueDate(e.target.value)}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Duration (days)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Duration (days)
+              </label>
               <input
                 type="number"
                 min="1"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:border-green-900 focus:outline-none bg-transparent"
                 value={newDuration}
                 onChange={(e) => setNewDuration(e.target.value)}
               />
@@ -197,7 +212,7 @@ export default function Home() {
           </div>
           <button
             onClick={handleAddTodo}
-            className="mt-4 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300 font-semibold"
+            className="btn-primary mt-4 px-6 py-3"
           >
             Add Task
           </button>
@@ -205,70 +220,95 @@ export default function Home() {
 
         {/* Critical Path Info */}
         {dependencyInfo && (
-          <div className="bg-white rounded-lg shadow-xl p-6 mb-8">
-            <h2 className="text-2xl font-bold mb-4 text-gray-800">Project Overview</h2>
+          <div className="bg-transparent rounded-lg p-6 mb-8">
+            <h2 className="text-2xl  mb-4 text-gray-800">Project Overview</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="bg-blue-50 p-4 rounded-lg">
                 <h3 className="font-semibold text-blue-800">Total Tasks</h3>
-                <p className="text-2xl font-bold text-blue-600">{dependencyInfo.totalTasks}</p>
+                <p className="text-2xl  text-blue-600">
+                  {dependencyInfo.totalTasks}
+                </p>
               </div>
               <div className="bg-purple-50 p-4 rounded-lg">
-                <h3 className="font-semibold text-purple-800">Critical Path Tasks</h3>
-                <p className="text-2xl font-bold text-purple-600">{dependencyInfo.criticalPath.criticalPath.length}</p>
+                <h3 className="font-semibold text-purple-800">
+                  Critical Path Tasks
+                </h3>
+                <p className="text-2xl  text-purple-600">
+                  {dependencyInfo.criticalPath.criticalPath.length}
+                </p>
               </div>
               <div className="bg-pink-50 p-4 rounded-lg">
-                <h3 className="font-semibold text-pink-800">Project Duration</h3>
-                <p className="text-2xl font-bold text-pink-600">{dependencyInfo.criticalPath.totalDuration} days</p>
+                <h3 className="font-semibold text-pink-800">
+                  Project Duration
+                </h3>
+                <p className="text-2xl  text-pink-600">
+                  {dependencyInfo.criticalPath.totalDuration} days
+                </p>
               </div>
             </div>
           </div>
         )}
 
         {/* Dependency Management */}
-        <div className="bg-white rounded-lg shadow-xl p-6 mb-8">
+        <div className="bg-transparent rounded-lg p-6 mb-8">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold text-gray-800">Dependency Management</h2>
+            <h2 className="text-2xl text-gray-800">Dependency Management</h2>
             <button
               onClick={() => setShowDependencies(!showDependencies)}
-              className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition duration-300"
+              className="btn-primary px-4 py-2
+                            "
             >
-              {showDependencies ? 'Hide' : 'Show'} Dependencies
+              {showDependencies ? "Hide" : "Show"} Dependencies
             </button>
           </div>
-          
+
           {showDependencies && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Task</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Task
+                </label>
                 <select
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  value={selectedTask || ''}
-                  onChange={(e) => setSelectedTask(parseInt(e.target.value) || null)}
+                  value={selectedTask || ""}
+                  onChange={(e) =>
+                    setSelectedTask(parseInt(e.target.value) || null)
+                  }
                 >
                   <option value="">Select a task...</option>
                   {todos.map((todo) => (
-                    <option key={todo.id} value={todo.id}>{todo.title}</option>
+                    <option key={todo.id} value={todo.id}>
+                      {todo.title}
+                    </option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Depends On</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Depends On
+                </label>
                 <select
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  value={selectedDependency || ''}
-                  onChange={(e) => setSelectedDependency(parseInt(e.target.value) || null)}
+                  value={selectedDependency || ""}
+                  onChange={(e) =>
+                    setSelectedDependency(parseInt(e.target.value) || null)
+                  }
                 >
                   <option value="">Select dependency...</option>
-                  {todos.filter(todo => todo.id !== selectedTask).map((todo) => (
-                    <option key={todo.id} value={todo.id}>{todo.title}</option>
-                  ))}
+                  {todos
+                    .filter((todo) => todo.id !== selectedTask)
+                    .map((todo) => (
+                      <option key={todo.id} value={todo.id}>
+                        {todo.title}
+                      </option>
+                    ))}
                 </select>
               </div>
               <div className="flex items-end">
                 <button
                   onClick={handleAddDependency}
                   disabled={!selectedTask || !selectedDependency}
-                  className="w-full bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition duration-300"
+                  className="btn-primary w-fulL px-4 py-3 rounded-lg disabled:cursor-not-allowed"
                 >
                   Add Dependency
                 </button>
@@ -278,61 +318,71 @@ export default function Home() {
         </div>
 
         {/* Tasks List */}
-        <div className="bg-white rounded-lg shadow-xl p-6">
-          <h2 className="text-2xl font-bold mb-4 text-gray-800">Tasks</h2>
+        <div className="bg-transparent rounded-lg p-6">
+          <h2 className="text-2xl  mb-4 text-gray-800">Tasks</h2>
           <div className="space-y-4">
             {todos.map((todo) => (
               <div
                 key={todo.id}
                 className={`p-6 rounded-lg border-2 ${
                   todo.isOnCriticalPath
-                    ? 'border-red-300 bg-red-50'
-                    : 'border-gray-200 bg-gray-50'
+                    ? "border-red-300 bg-red-50"
+                    : "border-gray-200 bg-gray-50"
                 }`}
               >
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <h3 className={`text-xl font-semibold ${
-                        isOverdue(todo.dueDate) ? 'text-red-600' : 'text-gray-800'
-                      }`}>
+                      <h3
+                        className={`text-xl font-semibold ${
+                          isOverdue(todo.dueDate)
+                            ? "text-red-600"
+                            : "text-gray-800"
+                        }`}
+                      >
                         {todo.title}
                       </h3>
                       {todo.isOnCriticalPath && (
-                        <span className="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                        <span className="bg-red-500 text-white px-2 py-1 rounded-full text-xs ">
                           CRITICAL PATH
                         </span>
                       )}
                       {isOverdue(todo.dueDate) && (
-                        <span className="bg-red-600 text-white px-2 py-1 rounded-full text-xs font-bold">
+                        <span className="bg-red-600 text-white px-2 py-1 rounded-full text-xs ">
                           OVERDUE
                         </span>
                       )}
                     </div>
-                    
+
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600">
                       <div>
-                        <span className="font-medium">Duration:</span> {todo.duration} days
+                        <span className="font-medium">Duration:</span>{" "}
+                        {todo.duration} days
                       </div>
                       {todo.dueDate && (
                         <div>
-                          <span className="font-medium">Due:</span> {formatDate(todo.dueDate)}
+                          <span className="font-medium">Due:</span>{" "}
+                          {formatDate(todo.dueDate)}
                         </div>
                       )}
                       {todo.earliestStartDate && (
                         <div>
-                          <span className="font-medium">Earliest Start:</span> {formatDate(todo.earliestStartDate)}
+                          <span className="font-medium">Earliest Start:</span>{" "}
+                          {formatDate(todo.earliestStartDate)}
                         </div>
                       )}
                       <div>
-                        <span className="font-medium">Created:</span> {formatDate(todo.createdAt)}
+                        <span className="font-medium">Created:</span>{" "}
+                        {formatDate(todo.createdAt)}
                       </div>
                     </div>
 
                     {/* Dependencies */}
                     {todo.dependencies.length > 0 && (
                       <div className="mt-3">
-                        <span className="text-sm font-medium text-gray-700">Depends on:</span>
+                        <span className="text-sm font-medium text-gray-700">
+                          Depends on:
+                        </span>
                         <div className="flex flex-wrap gap-2 mt-1">
                           {todo.dependencies.map((dep, index) => (
                             <span
@@ -341,7 +391,12 @@ export default function Home() {
                             >
                               {dep.dependsOn.title}
                               <button
-                                onClick={() => handleRemoveDependency(todo.id, dep.dependsOn.id)}
+                                onClick={() =>
+                                  handleRemoveDependency(
+                                    todo.id,
+                                    dep.dependsOn.id,
+                                  )
+                                }
                                 className="ml-1 text-blue-600 hover:text-blue-800"
                               >
                                 ×
@@ -355,7 +410,9 @@ export default function Home() {
                     {/* Dependent Tasks */}
                     {todo.dependentTasks.length > 0 && (
                       <div className="mt-3">
-                        <span className="text-sm font-medium text-gray-700">Blocks:</span>
+                        <span className="text-sm font-medium text-gray-700">
+                          Blocks:
+                        </span>
                         <div className="flex flex-wrap gap-2 mt-1">
                           {todo.dependentTasks.map((dep, index) => (
                             <span
@@ -374,8 +431,18 @@ export default function Home() {
                     onClick={() => handleDeleteTodo(todo.id)}
                     className="ml-4 text-red-500 hover:text-red-700 transition duration-300"
                   >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
                     </svg>
                   </button>
                 </div>
@@ -385,7 +452,9 @@ export default function Home() {
 
           {todos.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-gray-500 text-lg">No tasks yet. Add your first task above!</p>
+              <p className="text-gray-500 text-lg">
+                No tasks yet. Add your first task above!
+              </p>
             </div>
           )}
         </div>
