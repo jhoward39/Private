@@ -2,19 +2,12 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Calendar from "react-calendar";
-import { useTheme } from "../layout";
+import { useTheme } from "../contexts/ThemeContext";
+import { CustomCalendarProps } from "../../types";
 import "react-calendar/dist/Calendar.css";
 
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
-
-interface CustomCalendarProps {
-  value?: string;
-  onChange: (date: string) => void;
-  placeholder?: string;
-  className?: string;
-  openDirection?: "up" | "down";
-}
 
 export default function CustomCalendar({
   value,
@@ -106,7 +99,7 @@ export default function CustomCalendar({
   };
 
   return (
-    <div className="relative" ref={containerRef}>
+    <div className="relative z-[99999]" ref={containerRef}>
       {/* Date Input Trigger */}
       <input
         type="text"
@@ -120,7 +113,7 @@ export default function CustomCalendar({
       {/* Calendar Dropdown */}
       {isOpen && (
         <div
-          className={`absolute ${openDirection === "up" ? "bottom-full mb-1" : "top-full mt-1"} left-0 z-20 bg-[#FFFFF8] dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg p-4 transition-colors duration-200`}
+          className={`absolute ${openDirection === "up" ? "bottom-full mb-1" : "top-full mt-1"} left-0 z-[99999] bg-[#FFFFF8] dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg p-4 transition-colors duration-200`}
         >
           <style jsx global>{`
             .react-calendar {
