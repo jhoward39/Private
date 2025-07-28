@@ -116,11 +116,9 @@ export function topologicalSort(graph: DependencyGraph): number[] {
     inDegree.set(nodeId, 0);
   }
 
-  // Calculate in-degrees
-  for (const [, dependencies] of Array.from(graph.adjacencyList.entries())) {
-    for (const depId of dependencies) {
-      inDegree.set(depId, (inDegree.get(depId) || 0) + 1);
-    }
+  // Calculate in-degrees (each task's in-degree = number of tasks it depends on)
+  for (const [taskId, dependencies] of Array.from(graph.adjacencyList.entries())) {
+    inDegree.set(taskId, dependencies.length);
   }
 
   // Find all nodes with no incoming edges
@@ -135,13 +133,15 @@ export function topologicalSort(graph: DependencyGraph): number[] {
     const currentId = queue.shift()!;
     result.push(currentId);
 
-    const dependencies = graph.adjacencyList.get(currentId) || [];
-    for (const depId of dependencies) {
-      const newInDegree = (inDegree.get(depId) || 0) - 1;
-      inDegree.set(depId, newInDegree);
+    // Find all tasks that depend on the current task (successors)
+    for (const [taskId, dependencies] of Array.from(graph.adjacencyList.entries())) {
+      if (dependencies.includes(currentId)) {
+        const newInDegree = (inDegree.get(taskId) || 0) - 1;
+        inDegree.set(taskId, newInDegree);
 
-      if (newInDegree === 0) {
-        queue.push(depId);
+        if (newInDegree === 0) {
+          queue.push(taskId);
+        }
       }
     }
   }
@@ -156,44 +156,50 @@ export function calculateCriticalPath(graph: DependencyGraph): {
   criticalPath: number[];
   earliestTimes: Map<number, number>;
   latestTimes: Map<number, number>;
+  criticalPathSet: Set<number>;
 } {
   const sortedNodes = topologicalSort(graph);
   const earliestTimes = new Map<number, number>();
   const latestTimes = new Map<number, number>();
+  const earliestFinish = new Map<number, number>();
 
-  // Forward pass - calculate earliest start times
+  // Initialize all earliest start times to 0
+  for (const nodeId of Array.from(graph.nodes.keys())) {
+    earliestTimes.set(nodeId, 0);
+  }
+
+  // FORWARD PASS - calculate earliest start/finish times
   for (const nodeId of sortedNodes) {
-    let earliestStart = 0;
+    const node = graph.nodes.get(nodeId)!;
+    let earliestStart = earliestTimes.get(nodeId) || 0;
 
+    // Check all dependencies and find the latest finish time
     const dependencies = graph.adjacencyList.get(nodeId) || [];
     for (const depId of dependencies) {
-      const depEarliest = earliestTimes.get(depId) || 0;
-      const depNode = graph.nodes.get(depId)!;
-      earliestStart = Math.max(earliestStart, depEarliest + depNode.duration);
+      const depFinish = earliestFinish.get(depId) || 0;
+      earliestStart = Math.max(earliestStart, depFinish);
     }
 
     earliestTimes.set(nodeId, earliestStart);
+    const finishTime = earliestStart + node.duration;
+    earliestFinish.set(nodeId, finishTime);
   }
 
   // Find project completion time (max earliest finish time)
-  let projectDuration = 0;
-  for (const nodeId of Array.from(graph.nodes.keys())) {
-    const node = graph.nodes.get(nodeId)!;
-    const finishTime = (earliestTimes.get(nodeId) || 0) + node.duration;
-    projectDuration = Math.max(projectDuration, finishTime);
-  }
+  const projectDuration = Math.max(...Array.from(earliestFinish.values()));
 
-  // Backward pass - calculate latest start times
-  // Initialize all tasks to their latest possible start time
+  // BACKWARD PASS - calculate latest finish/start times
+  const latestFinish = new Map<number, number>();
+  
+  // Initialize all latest finish times to project duration
   for (const nodeId of Array.from(graph.nodes.keys())) {
-    const node = graph.nodes.get(nodeId)!;
-    latestTimes.set(nodeId, projectDuration - node.duration);
+    latestFinish.set(nodeId, projectDuration);
   }
 
   // Process nodes in reverse topological order
   for (const nodeId of [...sortedNodes].reverse()) {
     const node = graph.nodes.get(nodeId)!;
-
+    
     // Find tasks that depend on this task (successors)
     const successors: number[] = [];
     for (const [taskId, deps] of Array.from(graph.adjacencyList.entries())) {
@@ -202,22 +208,28 @@ export function calculateCriticalPath(graph: DependencyGraph): {
       }
     }
 
-    // If this task has successors, its latest start time is constrained by them
+    // If this task has successors, its latest finish is constrained by them
     if (successors.length > 0) {
       let minSuccessorStart = Infinity;
       for (const successorId of successors) {
-        const successorLatest = latestTimes.get(successorId) || 0;
-        minSuccessorStart = Math.min(minSuccessorStart, successorLatest);
+        const successorLatestStart = latestTimes.get(successorId);
+        if (successorLatestStart !== undefined) {
+          minSuccessorStart = Math.min(minSuccessorStart, successorLatestStart);
+        }
       }
-      // This task must finish before its earliest successor starts
-      const latestStart = minSuccessorStart - node.duration;
-      latestTimes.set(nodeId, latestStart);
+      if (minSuccessorStart !== Infinity) {
+        latestFinish.set(nodeId, minSuccessorStart);
+      }
     }
-    // If no successors, keep the initialized value (project end - duration)
+
+    const latestStart = latestFinish.get(nodeId)! - node.duration;
+    latestTimes.set(nodeId, latestStart);
   }
 
-  // Identify critical path tasks (earliest = latest, i.e., zero slack)
+  // IDENTIFY CRITICAL TASKS - where earliest start = latest start (zero slack)
   const criticalPath: number[] = [];
+  const criticalPathSet = new Set<number>(); // Use Set to avoid type issues
+  
   for (const nodeId of Array.from(graph.nodes.keys())) {
     const earliest = earliestTimes.get(nodeId) || 0;
     const latest = latestTimes.get(nodeId) || 0;
@@ -226,23 +238,11 @@ export function calculateCriticalPath(graph: DependencyGraph): {
     if (slack < 0.001) {
       // Account for floating point precision
       criticalPath.push(nodeId);
+      criticalPathSet.add(nodeId);
     }
   }
-
-  console.log("=== CRITICAL PATH DEBUG ===");
-  console.log("Critical path:", criticalPath);
-  console.log("Earliest times:", Array.from(earliestTimes.entries()));
-  console.log("Latest times:", Array.from(latestTimes.entries()));
   
-  // Debug slack calculation
-  for (const nodeId of Array.from(graph.nodes.keys())) {
-    const earliest = earliestTimes.get(nodeId) || 0;
-    const latest = latestTimes.get(nodeId) || 0;
-    const slack = Math.abs(latest - earliest);
-    console.log(`Task ${nodeId}: earliest=${earliest}, latest=${latest}, slack=${slack}, isCritical=${slack < 0.001}`);
-  }
-  
-  return { criticalPath, earliestTimes, latestTimes };
+  return { criticalPath, earliestTimes, latestTimes, criticalPathSet };
 }
 
 /**
@@ -250,34 +250,31 @@ export function calculateCriticalPath(graph: DependencyGraph): {
  */
 export async function updateTaskScheduling(): Promise<void> {
   const graph = await buildDependencyGraph();
-  const { criticalPath, earliestTimes } = calculateCriticalPath(graph);
-
-  console.log("=== UPDATE TASK SCHEDULING DEBUG ===");
-  console.log("Critical path from calculation:", criticalPath);
+  const { criticalPathSet, earliestTimes } = calculateCriticalPath(graph);
 
   // Use today as the project start date
   const projectStartDate = new Date();
   projectStartDate.setHours(0, 0, 0, 0); // Set to start of day
 
-  // Update all tasks with calculated values
-  for (const [taskId] of Array.from(graph.nodes.entries())) {
-    const earliestStart = earliestTimes.get(taskId) || 0;
-    const isOnCriticalPath = criticalPath.includes(taskId);
+  // Use atomic transaction to update all tasks
+  await prisma.$transaction(async (tx) => {
+    for (const [taskId] of Array.from(graph.nodes.entries())) {
+      const earliestStart = earliestTimes.get(taskId) || 0;
+      const isOnCriticalPath = criticalPathSet.has(taskId); // Use Set.has() instead of Array.includes()
 
-    console.log(`Updating Task ${taskId}: isOnCriticalPath = ${isOnCriticalPath}`);
+      // Calculate earliest start date from project start date
+      const earliestStartDate = new Date(projectStartDate);
+      earliestStartDate.setDate(projectStartDate.getDate() + earliestStart);
 
-    // Calculate earliest start date from project start date
-    const earliestStartDate = new Date(projectStartDate);
-    earliestStartDate.setDate(projectStartDate.getDate() + earliestStart);
-
-    await prisma.todo.update({
-      where: { id: taskId },
-      data: {
-        earliestStartDate,
-        isOnCriticalPath,
-      },
-    });
-  }
+      await tx.todo.update({
+        where: { id: taskId },
+        data: {
+          earliestStartDate,
+          isOnCriticalPath,
+        },
+      });
+    }
+  });
 }
 
 /**
@@ -396,3 +393,4 @@ export async function getCriticalPathInfo() {
     ),
   };
 }
+
