@@ -268,7 +268,7 @@ export default function TaskListPage() {
               </label>
               <input
                 type="text"
-                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors duration-200"
+                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-[#FFFFF8] dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors duration-200"
                 placeholder="Enter task title..."
                 value={newTodo}
                 onChange={(e) => setNewTodo(e.target.value)}
@@ -293,7 +293,7 @@ export default function TaskListPage() {
               <input
                 type="number"
                 min="1"
-                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors duration-200"
+                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-[#FFFFF8] dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors duration-200"
                 value={newDuration}
                 onChange={(e) => setNewDuration(e.target.value)}
               />

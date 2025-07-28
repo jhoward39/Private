@@ -114,7 +114,7 @@ export default function CustomCalendar({
         value={selectedDate ? formatDisplayDate(selectedDate) : ""}
         placeholder={placeholder}
         onClick={() => setIsOpen(!isOpen)}
-        className={`border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200 cursor-pointer ${className}`}
+        className={`border border-gray-300 dark:border-gray-600 rounded-lg bg-[#FFFFF8] dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-200 cursor-pointer ${className}`}
       />
 
       {/* Calendar Dropdown */}
