@@ -31,3 +31,12 @@ body {
     @apply bg-gray-300 border border-gray-300 text-gray-600 rounded-lg hover:bg-green-900 hover:text-white active:bg-green-900 transition-all duration-300 ease-in-out;
   }
 }
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -200% 200%;
+  }
+  100% {
+    background-position: 200% -200%;
+  }
+}

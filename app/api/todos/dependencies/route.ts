@@ -21,10 +21,7 @@ export async function GET() {
     });
   } catch (error) {
     console.error("Error fetching dependency info:", error);
-    return NextResponse.json(
-      { error: "Error fetching dependency info" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Error fetching dependency info" }, { status: 500 });
   }
 }
 
@@ -52,15 +49,12 @@ export async function POST(request: Request) {
     }
 
     await addDependency(parseInt(taskId), parseInt(dependsOnId));
-    return NextResponse.json(
-      { message: "Dependency added successfully" },
-      { status: 201 },
-    );
-  } catch (error: any) {
+    return NextResponse.json({ message: "Dependency added successfully" }, { status: 201 });
+  } catch (error: unknown) {
     console.error("Error creating dependency:", error);
     return NextResponse.json(
       {
-        error: error.message || "Error creating dependency",
+        error: error instanceof Error ? error.message : "Error creating dependency",
       },
       { status: 400 },
     );
@@ -82,15 +76,13 @@ export async function DELETE(request: Request) {
     }
 
     await removeDependency(parseInt(taskId), parseInt(dependsOnId));
-    return NextResponse.json(
-      { message: "Dependency removed successfully" },
-      { status: 200 },
-    );
-  } catch (error: any) {
+    return NextResponse.json({ message: "Dependency removed successfully" }, { status: 200 });
+  } catch (error: unknown) {
     console.error("Error removing dependency:", error);
+    const errorMessage = error instanceof Error ? error.message : "Error removing dependency";
     return NextResponse.json(
       {
-        error: error.message || "Error removing dependency",
+        error: errorMessage,
       },
       { status: 500 },
     );

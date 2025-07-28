@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { updateTaskScheduling } from "@/lib/dependencies";
+import { getDefaultDueDate } from "@/lib/dateUtils";
 
 export async function GET() {
   try {
@@ -34,10 +35,7 @@ export async function GET() {
     return NextResponse.json(todos);
   } catch (error) {
     console.error("Error fetching todos:", error);
-    return NextResponse.json(
-      { error: "Error fetching todos" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Error fetching todos" }, { status: 500 });
   }
 }
 
@@ -49,15 +47,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Title is required" }, { status: 400 });
     }
 
-    const todoData: any = {
+    const todoData = {
       title: title.trim(),
       duration: parseInt(duration) || 1,
+      // Always set a due date - use provided date or default to 5 business days from now
+      dueDate: dueDate ? new Date(dueDate) : getDefaultDueDate(),
     };
-
-    // Add due date if provided
-    if (dueDate) {
-      todoData.dueDate = new Date(dueDate);
-    }
 
     const todo = await prisma.todo.create({
       data: todoData,
@@ -85,10 +80,29 @@ export async function POST(request: Request) {
       },
     });
 
+    // Fire-and-forget image fetch: do not block response
+    (async () => {
+      const { fetchImageUrl } = await import("@/lib/pexels");
+      const img = await fetchImageUrl(todo.title);
+      if (img) {
+        try {
+          await prisma.todo.update({
+            where: { id: todo.id },
+            data: { imageUrl: img },
+          });
+        } catch {
+          // Ignore image update errors
+        }
+      }
+    })();
+
     // Update scheduling for all tasks
     await updateTaskScheduling();
 
-    return NextResponse.json(todo, { status: 201 });
+    // Return the todo but intentionally omit imageUrl so the client knows the image is still loading
+    const { imageUrl, ...todoResponse } = todo;
+    void imageUrl; // Mark as intentionally unused
+    return NextResponse.json(todoResponse, { status: 201 });
   } catch (error) {
     console.error("Error creating todo:", error);
     return NextResponse.json({ error: "Error creating todo" }, { status: 500 });
