@@ -25,8 +25,48 @@ export default function CustomCalendar({
 }: CustomCalendarProps) {
   const { isDark } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(value ? new Date(value) : null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(() => {
+    if (!value) return null;
+    try {
+      // Parse local date string (YYYY-MM-DD) as date in browser's local timezone
+      const [year, month, day] = value.split('-').map(Number);
+      if (isNaN(year) || isNaN(month) || isNaN(day)) {
+        throw new Error('Invalid date components');
+      }
+      const date = new Date(year, month - 1, day);
+      if (isNaN(date.getTime())) {
+        throw new Error('Invalid date');
+      }
+      return date;
+    } catch (error) {
+      console.error('Error parsing initial date value:', error);
+      return null;
+    }
+  });
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Update selectedDate when value prop changes
+  useEffect(() => {
+    if (!value) {
+      setSelectedDate(null);
+    } else {
+      try {
+        // Parse local date string (YYYY-MM-DD) as date in browser's local timezone
+        const [year, month, day] = value.split('-').map(Number);
+        if (isNaN(year) || isNaN(month) || isNaN(day)) {
+          throw new Error('Invalid date components');
+        }
+        const date = new Date(year, month - 1, day);
+        if (isNaN(date.getTime())) {
+          throw new Error('Invalid date');
+        }
+        setSelectedDate(date);
+      } catch (error) {
+        console.error('Error parsing date value:', error);
+        setSelectedDate(null);
+      }
+    }
+  }, [value]);
 
   // Close calendar when clicking outside
   useEffect(() => {
@@ -48,17 +88,20 @@ export default function CustomCalendar({
   const handleDateChange = (value: Value) => {
     if (value && !Array.isArray(value)) {
       setSelectedDate(value);
-      const formattedDate = value.toISOString().split("T")[0];
+      // Format as local date string (YYYY-MM-DD) using browser's timezone
+      const formattedDate = `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}-${String(value.getDate()).padStart(2, '0')}`;
       onChange(formattedDate);
       setIsOpen(false);
     }
   };
 
   const formatDisplayDate = (date: Date) => {
-    return date.toLocaleDateString("en-US", {
+    // Use browser's actual locale and timezone for consistent display
+    return date.toLocaleDateString(navigator.language, {
       month: "2-digit",
       day: "2-digit",
       year: "numeric",
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
     });
   };
 
@@ -208,7 +251,8 @@ export default function CustomCalendar({
               onClick={() => {
                 const today = new Date();
                 setSelectedDate(today);
-                onChange(today.toISOString().split("T")[0]);
+                // Format as local date string (YYYY-MM-DD) using browser's timezone
+                onChange(`${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`);
                 setIsOpen(false);
               }}
               className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 transition-colors duration-200 font-medium"

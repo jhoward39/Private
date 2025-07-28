@@ -184,44 +184,64 @@ export function calculateCriticalPath(graph: DependencyGraph): {
   }
 
   // Backward pass - calculate latest start times
+  // Initialize all tasks to their latest possible start time
+  for (const nodeId of Array.from(graph.nodes.keys())) {
+    const node = graph.nodes.get(nodeId)!;
+    latestTimes.set(nodeId, projectDuration - node.duration);
+  }
+
+  // Process nodes in reverse topological order
   for (const nodeId of [...sortedNodes].reverse()) {
     const node = graph.nodes.get(nodeId)!;
 
-    // Find dependent tasks
-    const dependentTasks: number[] = [];
+    // Find tasks that depend on this task (successors)
+    const successors: number[] = [];
     for (const [taskId, deps] of Array.from(graph.adjacencyList.entries())) {
       if (deps.includes(nodeId)) {
-        dependentTasks.push(taskId);
+        successors.push(taskId);
       }
     }
 
-    let latestStart = projectDuration - node.duration;
-
-    if (dependentTasks.length > 0) {
-      let minLatestStartOfDependents = Infinity;
-      for (const depTaskId of dependentTasks) {
-        const depLatest = latestTimes.get(depTaskId) || projectDuration;
-        minLatestStartOfDependents = Math.min(minLatestStartOfDependents, depLatest);
+    // If this task has successors, its latest start time is constrained by them
+    if (successors.length > 0) {
+      let minSuccessorStart = Infinity;
+      for (const successorId of successors) {
+        const successorLatest = latestTimes.get(successorId) || 0;
+        minSuccessorStart = Math.min(minSuccessorStart, successorLatest);
       }
-      latestStart = minLatestStartOfDependents - node.duration;
+      // This task must finish before its earliest successor starts
+      const latestStart = minSuccessorStart - node.duration;
+      latestTimes.set(nodeId, latestStart);
     }
-
-    latestTimes.set(nodeId, latestStart);
+    // If no successors, keep the initialized value (project end - duration)
   }
 
-  // Identify critical path tasks (earliest = latest)
+  // Identify critical path tasks (earliest = latest, i.e., zero slack)
   const criticalPath: number[] = [];
   for (const nodeId of Array.from(graph.nodes.keys())) {
     const earliest = earliestTimes.get(nodeId) || 0;
     const latest = latestTimes.get(nodeId) || 0;
+    const slack = Math.abs(latest - earliest);
 
-    if (Math.abs(earliest - latest) < 0.001) {
+    if (slack < 0.001) {
       // Account for floating point precision
       criticalPath.push(nodeId);
     }
   }
 
+  console.log("=== CRITICAL PATH DEBUG ===");
   console.log("Critical path:", criticalPath);
+  console.log("Earliest times:", Array.from(earliestTimes.entries()));
+  console.log("Latest times:", Array.from(latestTimes.entries()));
+  
+  // Debug slack calculation
+  for (const nodeId of Array.from(graph.nodes.keys())) {
+    const earliest = earliestTimes.get(nodeId) || 0;
+    const latest = latestTimes.get(nodeId) || 0;
+    const slack = Math.abs(latest - earliest);
+    console.log(`Task ${nodeId}: earliest=${earliest}, latest=${latest}, slack=${slack}, isCritical=${slack < 0.001}`);
+  }
+  
   return { criticalPath, earliestTimes, latestTimes };
 }
 
@@ -232,6 +252,9 @@ export async function updateTaskScheduling(): Promise<void> {
   const graph = await buildDependencyGraph();
   const { criticalPath, earliestTimes } = calculateCriticalPath(graph);
 
+  console.log("=== UPDATE TASK SCHEDULING DEBUG ===");
+  console.log("Critical path from calculation:", criticalPath);
+
   // Use today as the project start date
   const projectStartDate = new Date();
   projectStartDate.setHours(0, 0, 0, 0); // Set to start of day
@@ -240,6 +263,8 @@ export async function updateTaskScheduling(): Promise<void> {
   for (const [taskId] of Array.from(graph.nodes.entries())) {
     const earliestStart = earliestTimes.get(taskId) || 0;
     const isOnCriticalPath = criticalPath.includes(taskId);
+
+    console.log(`Updating Task ${taskId}: isOnCriticalPath = ${isOnCriticalPath}`);
 
     // Calculate earliest start date from project start date
     const earliestStartDate = new Date(projectStartDate);

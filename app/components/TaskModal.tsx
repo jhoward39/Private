@@ -83,7 +83,76 @@ export default function TaskModal({
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return "";
-    return new Date(dateString).toLocaleDateString();
+    // Use UTC methods to extract date components to preserve the intended date
+    const utcDate = new Date(dateString);
+    
+    // Create a new date in local timezone using the UTC date components
+    // This ensures we display the same date that was intended to be stored
+    const year = utcDate.getUTCFullYear();
+    const month = utcDate.getUTCMonth();
+    const day = utcDate.getUTCDate();
+    
+    const localDisplayDate = new Date(year, month, day);
+    
+    return localDisplayDate.toLocaleDateString(navigator.language, {
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+    });
+  };
+
+  /*
+   * Date Handling Strategy:
+   * - Database stores all dates in UTC
+   * - Display converts UTC to browser's local timezone for viewing
+   * - Editing converts UTC to local date strings (YYYY-MM-DD) using browser timezone
+   * - Saving converts local date strings back to UTC using browser timezone before API call
+   * - This ensures consistent timezone handling using the browser's actual timezone
+   */
+
+  // Convert UTC date string to local date string for editing (YYYY-MM-DD)
+  // Uses the browser's actual timezone for conversion
+  const utcToLocalDateString = (utcDateString: string): string => {
+    try {
+      const utcDate = new Date(utcDateString);
+      if (isNaN(utcDate.getTime())) {
+        throw new Error('Invalid date string');
+      }
+      
+      // Use UTC methods to extract date components to preserve the date
+      // This prevents timezone shifts from changing the actual date
+      const year = utcDate.getUTCFullYear();
+      const month = String(utcDate.getUTCMonth() + 1).padStart(2, '0');
+      const day = String(utcDate.getUTCDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    } catch (error) {
+      console.error('Error converting UTC to local date string:', error);
+      return "";
+    }
+  };
+
+  // Convert local date string (YYYY-MM-DD) to UTC for database
+  // Uses the browser's actual timezone for conversion
+  const localDateStringToUTC = (localDateString: string): string => {
+    try {
+      if (!localDateString || !/^\d{4}-\d{2}-\d{2}$/.test(localDateString)) {
+        throw new Error('Invalid local date string format');
+      }
+      
+      const [year, month, day] = localDateString.split('-').map(Number);
+      
+      // Create date directly in UTC to avoid timezone shifts
+      // This ensures the date stays the same when stored in the database
+      const utcDate = new Date(Date.UTC(year, month - 1, day));
+      
+      if (isNaN(utcDate.getTime())) {
+        throw new Error('Invalid date values');
+      }
+      
+      // Already in UTC, just convert to ISO string
+      return utcDate.toISOString();
+    } catch (error) {
+      console.error('Error converting local date string to UTC:', error);
+      return new Date().toISOString(); // Fallback to current date
+    }
   };
 
   const startEditing = (field: string, currentValue: string) => {
@@ -96,10 +165,13 @@ export default function TaskModal({
     setEditValue("");
 
     try {
+      // Convert local date string to UTC before sending to API
+      const processedValue = field === "dueDate" ? localDateStringToUTC(value) : value;
+      
       const response = await fetch(`/api/todos/${taskId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ [field]: field === "duration" ? parseInt(value) : value }),
+        body: JSON.stringify({ [field]: field === "duration" ? parseInt(value) : processedValue }),
       });
 
       if (response.ok) {
@@ -307,7 +379,7 @@ export default function TaskModal({
               ) : (
                 <div
                   onDoubleClick={() =>
-                    startEditing("dueDate", task.dueDate ? task.dueDate.split("T")[0] : "")
+                    startEditing("dueDate", task.dueDate ? utcToLocalDateString(task.dueDate) : "")
                   }
                   className="w-full p-3 bg-[#FFFFF8] dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                   title="Double-click to edit"

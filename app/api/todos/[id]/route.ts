@@ -25,6 +25,7 @@ export async function PATCH(request: Request, { params }: Params) {
 
     // Handle different fields that can be updated
     if ("dueDate" in body) {
+      // Body.dueDate is already a UTC ISO string from the frontend
       updateData.dueDate = body.dueDate ? new Date(body.dueDate) : null;
     }
     if ("done" in body) {
