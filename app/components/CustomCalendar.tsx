@@ -99,7 +99,7 @@ export default function CustomCalendar({
   };
 
   return (
-    <div className="relative z-[99999]" ref={containerRef}>
+    <div className="relative z-[50]" ref={containerRef}>
       {/* Date Input Trigger */}
       <input
         type="text"
