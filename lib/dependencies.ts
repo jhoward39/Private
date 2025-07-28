@@ -190,7 +190,7 @@ export function calculateCriticalPath(graph: DependencyGraph): {
 
   // BACKWARD PASS - calculate latest finish/start times
   const latestFinish = new Map<number, number>();
-  
+
   // Initialize all latest finish times to project duration
   for (const nodeId of Array.from(graph.nodes.keys())) {
     latestFinish.set(nodeId, projectDuration);
@@ -199,7 +199,7 @@ export function calculateCriticalPath(graph: DependencyGraph): {
   // Process nodes in reverse topological order
   for (const nodeId of [...sortedNodes].reverse()) {
     const node = graph.nodes.get(nodeId)!;
-    
+
     // Find tasks that depend on this task (successors)
     const successors: number[] = [];
     for (const [taskId, deps] of Array.from(graph.adjacencyList.entries())) {
@@ -229,7 +229,7 @@ export function calculateCriticalPath(graph: DependencyGraph): {
   // IDENTIFY CRITICAL TASKS - where earliest start = latest start (zero slack)
   const criticalPath: number[] = [];
   const criticalPathSet = new Set<number>(); // Use Set to avoid type issues
-  
+
   for (const nodeId of Array.from(graph.nodes.keys())) {
     const earliest = earliestTimes.get(nodeId) || 0;
     const latest = latestTimes.get(nodeId) || 0;
@@ -241,7 +241,7 @@ export function calculateCriticalPath(graph: DependencyGraph): {
       criticalPathSet.add(nodeId);
     }
   }
-  
+
   return { criticalPath, earliestTimes, latestTimes, criticalPathSet };
 }
 
@@ -393,4 +393,3 @@ export async function getCriticalPathInfo() {
     ),
   };
 }
-

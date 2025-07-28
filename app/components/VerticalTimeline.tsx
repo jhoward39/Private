@@ -66,8 +66,8 @@ function parseDate(dateStr: string): Date {
 function formatDate(date: Date): string {
   // Use local timezone formatting instead of UTC to fix timezone issues
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
 
@@ -281,65 +281,73 @@ export default function VerticalTimeline({
 
   // Calculate dependency paths for SVG rendering with collision avoidance
   const dependencyPaths = useMemo(() => {
-    // Helper function to check if a point is inside a task rectangle
-    const isPointInTask = (x: number, y: number, task: Task, taskCoords: { x: number; y: number }) => {
-      const halfWidth = (TASK_NODE_WIDTH * zoom) / 2;
-      const halfHeight = (TASK_NODE_HEIGHT * zoom) / 2;
-      return (
-        x >= taskCoords.x - halfWidth &&
-        x <= taskCoords.x + halfWidth &&
-        y >= taskCoords.y - halfHeight &&
-        y <= taskCoords.y + halfHeight
-      );
-    };
-
     // Helper function to check if a line segment intersects with a task
     const doesLineIntersectTask = (
-      x1: number, y1: number, x2: number, y2: number,
-      task: Task, taskCoords: { x: number; y: number }
+      x1: number,
+      y1: number,
+      x2: number,
+      y2: number,
+      task: Task,
+      taskCoords: { x: number; y: number },
     ) => {
       const halfWidth = (TASK_NODE_WIDTH * zoom) / 2;
       const halfHeight = (TASK_NODE_HEIGHT * zoom) / 2;
-      
+
       // Task rectangle bounds
       const left = taskCoords.x - halfWidth;
       const right = taskCoords.x + halfWidth;
       const top = taskCoords.y - halfHeight;
       const bottom = taskCoords.y + halfHeight;
-      
+
       // Check if line segment intersects with rectangle using line-rectangle intersection
-      return (
-        lineIntersectsRect(x1, y1, x2, y2, left, top, right, bottom)
-      );
+      return lineIntersectsRect(x1, y1, x2, y2, left, top, right, bottom);
     };
 
     // Line-rectangle intersection algorithm
-    const lineIntersectsRect = (x1: number, y1: number, x2: number, y2: number, 
-                               left: number, top: number, right: number, bottom: number) => {
+    const lineIntersectsRect = (
+      x1: number,
+      y1: number,
+      x2: number,
+      y2: number,
+      left: number,
+      top: number,
+      right: number,
+      bottom: number,
+    ) => {
       // Check if either endpoint is inside the rectangle
-      if ((x1 >= left && x1 <= right && y1 >= top && y1 <= bottom) ||
-          (x2 >= left && x2 <= right && y2 >= top && y2 <= bottom)) {
+      if (
+        (x1 >= left && x1 <= right && y1 >= top && y1 <= bottom) ||
+        (x2 >= left && x2 <= right && y2 >= top && y2 <= bottom)
+      ) {
         return true;
       }
-      
+
       // Check if line intersects any of the four rectangle edges
       return (
-        lineSegmentsIntersect(x1, y1, x2, y2, left, top, right, top) ||    // top edge
+        lineSegmentsIntersect(x1, y1, x2, y2, left, top, right, top) || // top edge
         lineSegmentsIntersect(x1, y1, x2, y2, right, top, right, bottom) || // right edge
         lineSegmentsIntersect(x1, y1, x2, y2, right, bottom, left, bottom) || // bottom edge
-        lineSegmentsIntersect(x1, y1, x2, y2, left, bottom, left, top)      // left edge
+        lineSegmentsIntersect(x1, y1, x2, y2, left, bottom, left, top) // left edge
       );
     };
 
     // Line segment intersection
-    const lineSegmentsIntersect = (x1: number, y1: number, x2: number, y2: number,
-                                  x3: number, y3: number, x4: number, y4: number) => {
+    const lineSegmentsIntersect = (
+      x1: number,
+      y1: number,
+      x2: number,
+      y2: number,
+      x3: number,
+      y3: number,
+      x4: number,
+      y4: number,
+    ) => {
       const denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
       if (Math.abs(denom) < 0.0001) return false;
-      
+
       const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom;
       const u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denom;
-      
+
       return t >= 0 && t <= 1 && u >= 0 && u <= 1;
     };
 
@@ -357,8 +365,8 @@ export default function VerticalTimeline({
         if (!fromCenter || !toCenter) return null;
 
         // Get all other tasks (not involved in this dependency)
-        const otherTasks = tasks.filter(t => t.id !== dep.fromId && t.id !== dep.toId);
-        
+        const otherTasks = tasks.filter((t) => t.id !== dep.fromId && t.id !== dep.toId);
+
         // Calculate edge intersection points with direction info
         const fromEdgeInfo = getBoxEdgePointWithDirection(
           fromCenter.x,
@@ -378,14 +386,20 @@ export default function VerticalTimeline({
         // Check if direct path would intersect with other tasks
         let needsRouting = false;
         const conflictingTasks: { task: Task; coords: { x: number; y: number } }[] = [];
-        
+
         for (const task of otherTasks) {
           const taskCoords = getTaskCoordinates(task);
-          if (taskCoords && doesLineIntersectTask(
-            fromEdgeInfo.point.x, fromEdgeInfo.point.y,
-            toEdgeInfo.point.x, toEdgeInfo.point.y,
-            task, taskCoords
-          )) {
+          if (
+            taskCoords &&
+            doesLineIntersectTask(
+              fromEdgeInfo.point.x,
+              fromEdgeInfo.point.y,
+              toEdgeInfo.point.x,
+              toEdgeInfo.point.y,
+              task,
+              taskCoords,
+            )
+          ) {
             needsRouting = true;
             conflictingTasks.push({ task, coords: taskCoords });
           }
@@ -414,38 +428,39 @@ export default function VerticalTimeline({
             Math.abs(toEdgeInfo.point.x - fromEdgeInfo.point.x) * 0.2,
             Math.abs(toEdgeInfo.point.y - fromEdgeInfo.point.y) * 0.2,
           );
-          
+
           // Determine routing direction and calculate offset
-          const avgConflictX = conflictingTasks.reduce((sum, ct) => sum + ct.coords.x, 0) / conflictingTasks.length;
+          const avgConflictX =
+            conflictingTasks.reduce((sum, ct) => sum + ct.coords.x, 0) / conflictingTasks.length;
           const routeLeft = fromCenter.x < avgConflictX;
           const routingOffset = Math.max(80 * zoom, (TASK_NODE_WIDTH * zoom) / 2 + 40 * zoom);
-          
+
           // Calculate avoidance X coordinate
-          const avoidanceX = routeLeft ? 
-            Math.min(...conflictingTasks.map(ct => ct.coords.x)) - routingOffset :
-            Math.max(...conflictingTasks.map(ct => ct.coords.x)) + routingOffset;
-          
+          const avoidanceX = routeLeft
+            ? Math.min(...conflictingTasks.map((ct) => ct.coords.x)) - routingOffset
+            : Math.max(...conflictingTasks.map((ct) => ct.coords.x)) + routingOffset;
+
           // First control point: maintain perpendicular exit from source
           const control1X = fromEdgeInfo.point.x + fromEdgeInfo.direction.x * baseControlDistance;
           const control1Y = fromEdgeInfo.point.y + fromEdgeInfo.direction.y * baseControlDistance;
-          
+
           // Calculate intermediate point for smooth avoidance
           const midY = fromCenter.y + (toCenter.y - fromCenter.y) * 0.5;
           const intermediateX = avoidanceX;
           const intermediateY = midY;
-          
+
           // Second control point: smooth transition toward intermediate point
           const control2X = avoidanceX;
           const control2Y = fromCenter.y + (midY - fromCenter.y) * 0.7;
-          
+
           // Third control point: smooth transition from intermediate point
           const control3X = avoidanceX;
           const control3Y = toCenter.y + (midY - toCenter.y) * 0.7;
-          
+
           // Fourth control point: maintain perpendicular approach to target
           const control4X = toEdgeInfo.point.x + toEdgeInfo.direction.x * baseControlDistance;
           const control4Y = toEdgeInfo.point.y + toEdgeInfo.direction.y * baseControlDistance;
-          
+
           // Create smooth path with two connected Bezier curves
           path = `M ${fromEdgeInfo.point.x} ${fromEdgeInfo.point.y} 
                   C ${control1X} ${control1Y} ${control2X} ${control2Y} ${intermediateX} ${intermediateY}

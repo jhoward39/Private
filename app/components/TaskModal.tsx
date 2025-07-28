@@ -85,17 +85,17 @@ export default function TaskModal({
     if (!dateString) return "";
     // Use UTC methods to extract date components to preserve the intended date
     const utcDate = new Date(dateString);
-    
+
     // Create a new date in local timezone using the UTC date components
     // This ensures we display the same date that was intended to be stored
     const year = utcDate.getUTCFullYear();
     const month = utcDate.getUTCMonth();
     const day = utcDate.getUTCDate();
-    
+
     const localDisplayDate = new Date(year, month, day);
-    
+
     return localDisplayDate.toLocaleDateString(navigator.language, {
-      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     });
   };
 
@@ -114,17 +114,17 @@ export default function TaskModal({
     try {
       const utcDate = new Date(utcDateString);
       if (isNaN(utcDate.getTime())) {
-        throw new Error('Invalid date string');
+        throw new Error("Invalid date string");
       }
-      
+
       // Use UTC methods to extract date components to preserve the date
       // This prevents timezone shifts from changing the actual date
       const year = utcDate.getUTCFullYear();
-      const month = String(utcDate.getUTCMonth() + 1).padStart(2, '0');
-      const day = String(utcDate.getUTCDate()).padStart(2, '0');
+      const month = String(utcDate.getUTCMonth() + 1).padStart(2, "0");
+      const day = String(utcDate.getUTCDate()).padStart(2, "0");
       return `${year}-${month}-${day}`;
     } catch (error) {
-      console.error('Error converting UTC to local date string:', error);
+      console.error("Error converting UTC to local date string:", error);
       return "";
     }
   };
@@ -134,23 +134,23 @@ export default function TaskModal({
   const localDateStringToUTC = (localDateString: string): string => {
     try {
       if (!localDateString || !/^\d{4}-\d{2}-\d{2}$/.test(localDateString)) {
-        throw new Error('Invalid local date string format');
+        throw new Error("Invalid local date string format");
       }
-      
-      const [year, month, day] = localDateString.split('-').map(Number);
-      
+
+      const [year, month, day] = localDateString.split("-").map(Number);
+
       // Create date directly in UTC to avoid timezone shifts
       // This ensures the date stays the same when stored in the database
       const utcDate = new Date(Date.UTC(year, month - 1, day));
-      
+
       if (isNaN(utcDate.getTime())) {
-        throw new Error('Invalid date values');
+        throw new Error("Invalid date values");
       }
-      
+
       // Already in UTC, just convert to ISO string
       return utcDate.toISOString();
     } catch (error) {
-      console.error('Error converting local date string to UTC:', error);
+      console.error("Error converting local date string to UTC:", error);
       return new Date().toISOString(); // Fallback to current date
     }
   };
@@ -167,7 +167,7 @@ export default function TaskModal({
     try {
       // Convert local date string to UTC before sending to API
       const processedValue = field === "dueDate" ? localDateStringToUTC(value) : value;
-      
+
       const response = await fetch(`/api/todos/${taskId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
