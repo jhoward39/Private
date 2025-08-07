@@ -61,9 +61,11 @@ const DependencyLayer: React.FC<DependencyLayerProps> = ({
 
         if (!fromCoords || !toCoords) return null;
 
-        // Add MINIMAP_WIDTH offset to align with SVG coordinate system
-        const fromCenter = { x: fromCoords.x + MINIMAP_WIDTH, y: fromCoords.y };
-        const toCenter = { x: toCoords.x + MINIMAP_WIDTH, y: toCoords.y };
+        // The coordinates are already relative to the timeline container,
+        // so we don't need to add the minimap width again here.
+        const TEMP_VISUAL_OFFSET = 16; // A guess to counteract suspected container padding
+        const fromCenter = { x: fromCoords.x + MINIMAP_WIDTH - TEMP_VISUAL_OFFSET, y: fromCoords.y };
+        const toCenter = { x: toCoords.x + MINIMAP_WIDTH - TEMP_VISUAL_OFFSET, y: toCoords.y };
 
         const fromEdgeInfo = getBoxEdgePointWithDirection(
           fromCenter.x,

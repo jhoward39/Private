@@ -31,7 +31,7 @@ export const ZOOM_STEP = 0.1;
  * The width of each task node in the timeline, in pixels.
  * @type {number}
  */
-export const TASK_NODE_WIDTH = 120;
+export const TASK_NODE_WIDTH = 140;
 
 /**
  * The height of each task node in the timeline, in pixels.
@@ -43,4 +43,4 @@ export const TASK_NODE_HEIGHT = 40;
  * The width of the minimap, in pixels.
  * @type {number}
  */
-export const MINIMAP_WIDTH = 40;
+export const MINIMAP_WIDTH = 10;

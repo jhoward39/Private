@@ -80,7 +80,10 @@ export const getBoxEdgePointWithDirection = (
   const dx = targetX - centerX;
   const dy = targetY - centerY;
 
-  if (Math.abs(dy) > 10) {
+  // Use a threshold based on task dimensions rather than hardcoded pixels
+  // If vertical distance is greater than half the task width, use vertical edges
+  const threshold = halfWidth * 0.5;
+  if (Math.abs(dy) > threshold) {
     if (isSource) {
       if (dy > 0) {
         return {
