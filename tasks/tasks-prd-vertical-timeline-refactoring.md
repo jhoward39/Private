@@ -1,0 +1,164 @@
+## Relevant Files
+
+- `app/components/Timeline/index.tsx` - Main refactored VerticalTimeline component export (replaces existing VerticalTimeline.tsx).
+- `app/components/Timeline/Core/TimelineContainer.tsx` - Core timeline container with date rows and main layout.
+- `app/components/Timeline/Core/DateRow.tsx` - Individual date row component with task positioning.
+- `app/components/Timeline/Core/TaskNode.tsx` - Individual task node component with drag and click handlers.
+- `app/components/Timeline/Minimap/MinimapContainer.tsx` - Minimap component with viewport navigation.
+- `app/components/Timeline/Minimap/MinimapViewport.tsx` - Viewport indicator and task dots for minimap.
+- `app/components/Timeline/Dependencies/DependencyLayer.tsx` - SVG overlay for dependency arrows and paths.
+- `app/components/Timeline/Dependencies/DependencyPath.tsx` - Individual dependency path component with collision avoidance.
+- `hooks/timeline/useZoom.ts` - Zoom state management and wheel event handling.
+- `hooks/timeline/useDrag.ts` - Task drag and drop functionality with coordinate tracking.
+- `hooks/timeline/useMinimap.ts` - Minimap navigation and viewport calculations.
+- `hooks/timeline/useTimeline.ts` - Core timeline logic including date calculations and task positioning.
+- `hooks/timeline/index.ts` - Centralized exports for all timeline hooks.
+- `utils/timeline/constants.ts` - Timeline constants extracted from VerticalTimeline component.
+- `utils/timeline/dateUtils.ts` - Date parsing, formatting, and manipulation utilities.
+- `utils/timeline/coordinates.ts` - Task coordinate calculation and positioning logic.
+- `utils/timeline/geometry.ts` - Geometric calculations for dependency paths and collision detection.
+- `utils/timeline/index.ts` - Centralized exports for all timeline utilities.
+
+### Notes
+
+- The refactoring maintains 100% backward compatibility with the existing `VerticalTimelineProps` interface
+- All existing functionality including zoom, drag, minimap, and dependency creation is preserved
+- Components integrate with existing `ThemeContext`, `TimelineContext`, and `TaskModal`
+- New structure follows existing codebase patterns seen in `TimelineContext.tsx` and other components
+- JSDoc documentation will be added to all new components and hooks for better developer experience
+
+## Tasks
+
+- [x] 1.0 Extract Timeline Utilities and Constants
+  - [x] 1.1 Create `utils/timeline/constants.ts` with all timeline constants
+    - [x] 1.1.1 Create the `utils/timeline/` directory structure
+    - [x] 1.1.2 Extract BASE_ROW_HEIGHT, MIN_ZOOM, MAX_ZOOM, ZOOM_STEP from VerticalTimeline.tsx
+    - [x] 1.1.3 Extract TASK_NODE_WIDTH, TASK_NODE_HEIGHT, MINIMAP_WIDTH dimensions
+    - [x] 1.1.4 Add TypeScript exports and JSDoc documentation for all constants
+  - [x] 1.2 Create `utils/timeline/dateUtils.ts` with date parsing, formatting, and manipulation
+    - [x] 1.2.1 Extract parseDate function from VerticalTimeline.tsx (lines 22-24)
+    - [x] 1.2.2 Extract formatDate function from VerticalTimeline.tsx (lines 26-32)
+    - [x] 1.2.3 Extract addDays function from VerticalTimeline.tsx (lines 34-38)
+    - [x] 1.2.4 Add JSDoc documentation and TypeScript types for all date utilities
+  - [x] 1.3 Create `utils/timeline/coordinates.ts` with task positioning and coordinate calculations
+    - [x] 1.3.1 Extract getTaskCoordinates function from VerticalTimeline.tsx (lines 130-158)
+    - [x] 1.3.2 Extract getBoxEdgePointWithDirection function from VerticalTimeline.tsx (lines 161-239)
+    - [x] 1.3.3 Add proper TypeScript interfaces for coordinate return types
+    - [x] 1.3.4 Add comprehensive JSDoc documentation with usage examples
+  - [x] 1.4 Create `utils/timeline/geometry.ts` with dependency path geometry and collision detection
+    - [x] 1.4.1 Extract doesLineIntersectTask function from VerticalTimeline.tsx (lines 244-263)
+    - [x] 1.4.2 Extract lineIntersectsRect function from VerticalTimeline.tsx (lines 266-291)
+    - [x] 1.4.3 Extract lineSegmentsIntersect function from VerticalTimeline.tsx (lines 294-311)
+    - [x] 1.4.4 Add TypeScript interfaces for geometric calculations and JSDoc documentation
+  - [x] 1.5 Create `utils/timeline/index.ts` with centralized exports
+    - [x] 1.5.1 Export all constants from constants.ts
+    - [x] 1.5.2 Export all date utilities from dateUtils.ts
+    - [x] 1.5.3 Export all coordinate functions from coordinates.ts
+    - [x] 1.5.4 Export all geometry functions from geometry.ts
+- [ ] 2.0 Create Timeline Custom Hooks
+  - [ ] 2.1 Create `hooks/timeline/useZoom.ts` with zoom state management and handlers
+    - [ ] 2.1.1 Create the `hooks/timeline/` directory structure
+    - [ ] 2.1.2 Extract zoom state (zoom, setZoom) and related logic from VerticalTimeline.tsx
+    - [ ] 2.1.3 Extract handleWheel function from VerticalTimeline.tsx (lines 463-501) with scroll position preservation
+    - [ ] 2.1.4 Extract wheel event listener setup from useEffect (lines 510-522)
+    - [ ] 2.1.5 Add TypeScript interface for useZoom return type and JSDoc documentation
+  - [ ] 2.2 Create `hooks/timeline/useDrag.ts` with drag and drop functionality
+    - [ ] 2.2.1 Extract drag state (draggedTask, draggedTaskPos, dropTargetRowIndex) from VerticalTimeline.tsx
+    - [ ] 2.2.2 Extract handleTaskMouseDown function from VerticalTimeline.tsx (lines 554-590)
+    - [ ] 2.2.3 Extract handleMouseMove and handleMouseUp functions from VerticalTimeline.tsx (lines 592-622)
+    - [ ] 2.2.4 Extract dropTargetRowIndex calculation logic from useMemo (lines 793-803)
+    - [ ] 2.2.5 Add TypeScript interfaces and comprehensive JSDoc documentation
+  - [ ] 2.3 Create `hooks/timeline/useMinimap.ts` with minimap navigation and viewport calculations
+    - [ ] 2.3.1 Extract minimap state (minimapDragging, scrollTop) from VerticalTimeline.tsx
+    - [ ] 2.3.2 Extract minimapViewport calculation from useMemo (lines 646-678)
+    - [ ] 2.3.3 Extract taskDots calculation from useMemo (lines 681-699)
+    - [ ] 2.3.4 Extract minimap mouse handlers (handleMinimapMouseDown, handleMinimapMouseMove, handleMinimapMouseUp) from lines 702-745
+    - [ ] 2.3.5 Extract minimap event listeners and resize handlers from useEffect hooks
+    - [ ] 2.3.6 Add TypeScript interfaces for minimap data structures and JSDoc documentation
+  - [ ] 2.4 Create `hooks/timeline/useTimeline.ts` with core timeline logic and date calculations
+    - [ ] 2.4.1 Extract date range calculation logic from useMemo (lines 81-118)
+    - [ ] 2.4.2 Extract container width tracking state and effects (lines 59, 757-780)
+    - [ ] 2.4.3 Extract scroll-to-today logic from useEffect (lines 446-460)
+    - [ ] 2.4.4 Extract Command/Ctrl key tracking from useEffect (lines 525-551)
+    - [ ] 2.4.5 Add TypeScript interfaces for timeline data and comprehensive JSDoc documentation
+  - [ ] 2.5 Create `hooks/timeline/index.ts` with centralized hook exports
+    - [ ] 2.5.1 Export useZoom hook with proper TypeScript types
+    - [ ] 2.5.2 Export useDrag hook with proper TypeScript types
+    - [ ] 2.5.3 Export useMinimap hook with proper TypeScript types
+    - [ ] 2.5.4 Export useTimeline hook with proper TypeScript types
+- [ ] 3.0 Build Timeline Core Components
+  - [ ] 3.1 Create `Timeline/Core/TaskNode.tsx` with individual task rendering and interactions
+    - [ ] 3.1.1 Create the `app/components/Timeline/Core/` directory structure
+    - [ ] 3.1.2 Extract task rendering JSX from VerticalTimeline.tsx (lines 978-1022)
+    - [ ] 3.1.3 Create TaskNodeProps interface with task, positioning, drag state, and event handlers
+    - [ ] 3.1.4 Implement task styling logic including drag state, connecting state, and theme integration
+    - [ ] 3.1.5 Add JSDoc documentation and usage examples
+  - [ ] 3.2 Create `Timeline/Core/DateRow.tsx` with date labels and task layout
+    - [ ] 3.2.1 Extract date row rendering JSX from VerticalTimeline.tsx (lines 944-1024)
+    - [ ] 3.2.2 Create DateRowProps interface with row data, tasks, and layout properties
+    - [ ] 3.2.3 Implement date label formatting and today highlighting logic
+    - [ ] 3.2.4 Implement drop target highlighting for drag operations
+    - [ ] 3.2.5 Add JSDoc documentation with component architecture details
+  - [ ] 3.3 Create `Timeline/Core/TimelineContainer.tsx` with scrollable container and main layout
+    - [ ] 3.3.1 Extract main timeline container JSX from VerticalTimeline.tsx (lines 854-1027)
+    - [ ] 3.3.2 Create TimelineContainerProps interface with scroll handlers and container properties
+    - [ ] 3.3.3 Implement scroll handling, mouse event delegation, and context menu prevention
+    - [ ] 3.3.4 Integrate DateRow components with proper key management
+    - [ ] 3.3.5 Add JSDoc documentation and performance considerations
+- [ ] 4.0 Build Timeline Feature Components
+  - [ ] 4.1 Create `Timeline/Minimap/MinimapViewport.tsx` with viewport indicator and task dots
+    - [ ] 4.1.1 Create the `app/components/Timeline/Minimap/` directory structure
+    - [ ] 4.1.2 Extract viewport indicator JSX from VerticalTimeline.tsx (lines 842-850)
+    - [ ] 4.1.3 Extract task dots rendering JSX from VerticalTimeline.tsx (lines 827-839)
+    - [ ] 4.1.4 Create MinimapViewportProps interface with viewport dimensions and task dot data
+    - [ ] 4.1.5 Add JSDoc documentation and viewport calculation explanations
+  - [ ] 4.2 Create `Timeline/Minimap/MinimapContainer.tsx` with navigation and interaction
+    - [ ] 4.2.1 Extract minimap container JSX from VerticalTimeline.tsx (lines 809-851)
+    - [ ] 4.2.2 Create MinimapContainerProps interface with mouse handlers and dimensions
+    - [ ] 4.2.3 Implement timeline line rendering and theme integration
+    - [ ] 4.2.4 Integrate MinimapViewport component with proper event handling
+    - [ ] 4.2.5 Add JSDoc documentation with interaction behavior details
+  - [ ] 4.3 Create `Timeline/Dependencies/DependencyPath.tsx` with individual dependency arrows
+    - [ ] 4.3.1 Create the `app/components/Timeline/Dependencies/` directory structure
+    - [ ] 4.3.2 Extract individual dependency path rendering from dependencyPaths.map (lines 910-927)
+    - [ ] 4.3.3 Create DependencyPathProps interface with path data, styling, and critical path info
+    - [ ] 4.3.4 Implement critical path styling and arrow marker selection
+    - [ ] 4.3.5 Add JSDoc documentation with path calculation details
+  - [ ] 4.4 Create `Timeline/Dependencies/DependencyLayer.tsx` with SVG overlay coordination
+    - [ ] 4.4.1 Extract SVG container and definitions from VerticalTimeline.tsx (lines 865-929)
+    - [ ] 4.4.2 Extract dependencyPaths calculation logic from useMemo (lines 242-441)
+    - [ ] 4.4.3 Create DependencyLayerProps interface with tasks, dependencies, and coordinate functions
+    - [ ] 4.4.4 Implement arrow marker definitions and path collision avoidance
+    - [ ] 4.4.5 Add JSDoc documentation with SVG rendering and performance notes
+- [ ] 5.0 Integrate and Test Refactored Timeline
+  - [ ] 5.1 Create main `Timeline/index.tsx` component orchestrating all subcomponents
+    - [ ] 5.1.1 Create the main Timeline component with VerticalTimelineProps interface
+    - [ ] 5.1.2 Import and integrate all custom hooks (useZoom, useDrag, useMinimap, useTimeline)
+    - [ ] 5.1.3 Import and compose all subcomponents (MinimapContainer, TimelineContainer, DependencyLayer)
+    - [ ] 5.1.4 Implement error boundaries and error message display logic (lines 1030-1038)
+    - [ ] 5.1.5 Integrate TaskModal with proper state management (lines 1041-1053)
+    - [ ] 5.1.6 Add comprehensive JSDoc documentation with component architecture overview
+  - [ ] 5.2 Update application integration and imports
+    - [ ] 5.2.1 Update import in `app/page.tsx` from `./components/VerticalTimeline` to `./components/Timeline`
+    - [ ] 5.2.2 Verify no other files import the old VerticalTimeline component
+    - [ ] 5.2.3 Test that the application builds successfully with new imports
+  - [ ] 5.3 Comprehensive functionality verification
+    - [ ] 5.3.1 Test zoom functionality with Ctrl/Cmd + scroll wheel in both directions
+    - [ ] 5.3.2 Test task drag and drop between different dates with visual feedback
+    - [ ] 5.3.3 Test minimap navigation by clicking and dragging viewport indicator
+    - [ ] 5.3.4 Test dependency creation with right-click and error handling
+    - [ ] 5.3.5 Test task modal opening with Cmd/Ctrl + click and all modal functionality
+    - [ ] 5.3.6 Test theme switching and verify all components respond correctly
+    - [ ] 5.3.7 Test scroll-to-today functionality on component mount
+    - [ ] 5.3.8 Test critical path visualization and dependency arrow rendering
+  - [ ] 5.4 Documentation and code quality finalization
+    - [ ] 5.4.1 Review and enhance JSDoc comments for all new components
+    - [ ] 5.4.2 Add usage examples to main Timeline component documentation
+    - [ ] 5.4.3 Create component relationship diagram in comments
+    - [ ] 5.4.4 Verify TypeScript types are properly exported and documented
+    - [ ] 5.4.5 Run linter and fix any code quality issues
+  - [ ] 5.5 Clean up and finalize refactoring
+    - [ ] 5.5.1 Verify all functionality works identically to original implementation
+    - [ ] 5.5.2 Remove the original `app/components/VerticalTimeline.tsx` file
+    - [ ] 5.5.3 Update any remaining references or documentation that mentions the old file
+    - [ ] 5.5.4 Commit the refactoring with detailed commit message documenting the changes
