@@ -55,37 +55,37 @@
     - [x] 1.5.2 Export all date utilities from dateUtils.ts
     - [x] 1.5.3 Export all coordinate functions from coordinates.ts
     - [x] 1.5.4 Export all geometry functions from geometry.ts
-- [ ] 2.0 Create Timeline Custom Hooks
-  - [ ] 2.1 Create `hooks/timeline/useZoom.ts` with zoom state management and handlers
-    - [ ] 2.1.1 Create the `hooks/timeline/` directory structure
-    - [ ] 2.1.2 Extract zoom state (zoom, setZoom) and related logic from VerticalTimeline.tsx
-    - [ ] 2.1.3 Extract handleWheel function from VerticalTimeline.tsx (lines 463-501) with scroll position preservation
-    - [ ] 2.1.4 Extract wheel event listener setup from useEffect (lines 510-522)
-    - [ ] 2.1.5 Add TypeScript interface for useZoom return type and JSDoc documentation
-  - [ ] 2.2 Create `hooks/timeline/useDrag.ts` with drag and drop functionality
-    - [ ] 2.2.1 Extract drag state (draggedTask, draggedTaskPos, dropTargetRowIndex) from VerticalTimeline.tsx
-    - [ ] 2.2.2 Extract handleTaskMouseDown function from VerticalTimeline.tsx (lines 554-590)
-    - [ ] 2.2.3 Extract handleMouseMove and handleMouseUp functions from VerticalTimeline.tsx (lines 592-622)
-    - [ ] 2.2.4 Extract dropTargetRowIndex calculation logic from useMemo (lines 793-803)
-    - [ ] 2.2.5 Add TypeScript interfaces and comprehensive JSDoc documentation
-  - [ ] 2.3 Create `hooks/timeline/useMinimap.ts` with minimap navigation and viewport calculations
-    - [ ] 2.3.1 Extract minimap state (minimapDragging, scrollTop) from VerticalTimeline.tsx
-    - [ ] 2.3.2 Extract minimapViewport calculation from useMemo (lines 646-678)
-    - [ ] 2.3.3 Extract taskDots calculation from useMemo (lines 681-699)
-    - [ ] 2.3.4 Extract minimap mouse handlers (handleMinimapMouseDown, handleMinimapMouseMove, handleMinimapMouseUp) from lines 702-745
-    - [ ] 2.3.5 Extract minimap event listeners and resize handlers from useEffect hooks
-    - [ ] 2.3.6 Add TypeScript interfaces for minimap data structures and JSDoc documentation
-  - [ ] 2.4 Create `hooks/timeline/useTimeline.ts` with core timeline logic and date calculations
-    - [ ] 2.4.1 Extract date range calculation logic from useMemo (lines 81-118)
-    - [ ] 2.4.2 Extract container width tracking state and effects (lines 59, 757-780)
-    - [ ] 2.4.3 Extract scroll-to-today logic from useEffect (lines 446-460)
-    - [ ] 2.4.4 Extract Command/Ctrl key tracking from useEffect (lines 525-551)
-    - [ ] 2.4.5 Add TypeScript interfaces for timeline data and comprehensive JSDoc documentation
-  - [ ] 2.5 Create `hooks/timeline/index.ts` with centralized hook exports
-    - [ ] 2.5.1 Export useZoom hook with proper TypeScript types
-    - [ ] 2.5.2 Export useDrag hook with proper TypeScript types
-    - [ ] 2.5.3 Export useMinimap hook with proper TypeScript types
-    - [ ] 2.5.4 Export useTimeline hook with proper TypeScript types
+- [x] 2.0 Create Timeline Custom Hooks
+  - [x] 2.1 Create `hooks/timeline/useZoom.ts` with zoom state management and handlers
+    - [x] 2.1.1 Create the `hooks/timeline/` directory structure
+    - [x] 2.1.2 Extract zoom state (zoom, setZoom) and related logic from VerticalTimeline.tsx
+    - [x] 2.1.3 Extract handleWheel function from VerticalTimeline.tsx (lines 463-501) with scroll position preservation
+    - [x] 2.1.4 Extract wheel event listener setup from useEffect (lines 510-522)
+    - [x] 2.1.5 Add TypeScript interface for useZoom return type and JSDoc documentation
+  - [x] 2.2 Create `hooks/timeline/useDrag.ts` with drag and drop functionality
+    - [x] 2.2.1 Extract drag state (draggedTask, draggedTaskPos, dropTargetRowIndex) from VerticalTimeline.tsx
+    - [x] 2.2.2 Extract handleTaskMouseDown function from VerticalTimeline.tsx (lines 554-590)
+    - [x] 2.2.3 Extract handleMouseMove and handleMouseUp functions from VerticalTimeline.tsx (lines 592-622)
+    - [x] 2.2.4 Extract dropTargetRowIndex calculation logic from useMemo (lines 793-803)
+    - [x] 2.2.5 Add TypeScript interfaces and comprehensive JSDoc documentation
+  - [x] 2.3 Create `hooks/timeline/useMinimap.ts` with minimap navigation and viewport calculations
+    - [x] 2.3.1 Extract minimap state (minimapDragging, scrollTop) from VerticalTimeline.tsx
+    - [x] 2.3.2 Extract minimapViewport calculation from useMemo (lines 646-678)
+    - [x] 2.3.3 Extract taskDots calculation from useMemo (lines 681-699)
+    - [x] 2.3.4 Extract minimap mouse handlers (handleMinimapMouseDown, handleMinimapMouseMove, handleMinimapMouseUp) from lines 702-745
+    - [x] 2.3.5 Extract minimap event listeners and resize handlers from useEffect hooks
+    - [x] 2.3.6 Add TypeScript interfaces for minimap data structures and JSDoc documentation
+  - [x] 2.4 Create `hooks/timeline/useTimeline.ts` with core timeline logic and date calculations
+    - [x] 2.4.1 Extract date range calculation logic from useMemo (lines 81-118)
+    - [x] 2.4.2 Extract container width tracking state and effects (lines 59, 757-780)
+    - [x] 2.4.3 Extract scroll-to-today logic from useEffect (lines 446-460)
+    - [x] 2.4.4 Extract Command/Ctrl key tracking from useEffect (lines 525-551)
+    - [x] 2.4.5 Add TypeScript interfaces for timeline data and comprehensive JSDoc documentation
+  - [x] 2.5 Create `hooks/timeline/index.ts` with centralized hook exports
+    - [x] 2.5.1 Export useZoom hook with proper TypeScript types
+    - [x] 2.5.2 Export useDrag hook with proper TypeScript types
+    - [x] 2.5.3 Export useMinimap hook with proper TypeScript types
+    - [x] 2.5.4 Export useTimeline hook with proper TypeScript types
 - [ ] 3.0 Build Timeline Core Components
   - [ ] 3.1 Create `Timeline/Core/TaskNode.tsx` with individual task rendering and interactions
     - [ ] 3.1.1 Create the `app/components/Timeline/Core/` directory structure
