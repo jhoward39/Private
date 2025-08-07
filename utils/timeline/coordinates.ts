@@ -47,7 +47,9 @@ export const getTaskCoordinates = (
     taskX = spacing * (taskIndex + 1);
   }
 
-  const absoluteX = MINIMAP_WIDTH + taskX;
+  // Return coordinates relative to the timeline area (excluding minimap)
+  // The HTML positioning will add MINIMAP_WIDTH offset when rendering
+  const absoluteX = taskX; // Don't add MINIMAP_WIDTH here
   const absoluteY = rowIndex * rowHeight + rowHeight / 2;
 
   return { x: absoluteX, y: absoluteY };

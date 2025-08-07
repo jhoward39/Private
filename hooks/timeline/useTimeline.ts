@@ -1,21 +1,45 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { TimelineTask } from "../../types";
-import { parseDate, formatDate, addDays, DateRow } from "../../utils/timeline";
+import { parseDate, formatDate, addDays, DateRow, getTaskCoordinates as getTaskCoordinatesUtil, Point } from "../../utils/timeline";
 
 interface UseTimelineResult {
   dateRows: DateRow[];
   containerWidth: number;
   setContainerWidth: (width: number) => void;
   isCommandHeld: boolean;
+  getTaskCoordinates: (task: TimelineTask) => Point | null;
 }
 
 /**
- * Custom hook for managing core timeline logic.
- * @param tasks An array of tasks to display on the timeline.
- * @param containerRef A React ref to the timeline container element.
- * @param rowHeight The current height of each row.
- * @param setScrollTop A function to set the scroll top position of the timeline container.
- * @returns An object with the calculated date rows, container width, and command key status.
+ * Custom hook for managing core timeline logic including date calculations and task positioning.
+ * 
+ * This hook handles:
+ * - Date range calculation based on task due dates
+ * - Container width tracking and updates
+ * - Command/Ctrl key state management for modal interactions
+ * - Scroll-to-today functionality on component mount
+ * - Unified coordinate calculation for both HTML positioning and SVG dependency arrows
+ * 
+ * @param tasks An array of tasks to display on the timeline
+ * @param containerRef A React ref to the timeline container element for width tracking
+ * @param rowHeight The current height of each row (zoom-scaled)
+ * @param setScrollTop A function to set the scroll top position (currently unused but kept for API consistency)
+ * @returns An object containing:
+ *   - dateRows: Array of date rows with associated tasks
+ *   - containerWidth: Current width of the timeline container
+ *   - setContainerWidth: Function to update container width
+ *   - isCommandHeld: Boolean indicating if Cmd/Ctrl key is pressed
+ *   - getTaskCoordinates: Function to get task center coordinates for positioning
+ * 
+ * @example
+ * ```tsx
+ * const { dateRows, getTaskCoordinates, isCommandHeld } = useTimeline(
+ *   tasks, 
+ *   containerRef, 
+ *   BASE_ROW_HEIGHT * zoom, 
+ *   setScrollTop
+ * );
+ * ```
  */
 export const useTimeline = (
   tasks: TimelineTask[],
@@ -115,6 +139,12 @@ export const useTimeline = (
     };
   }, []);
 
-  return { dateRows, containerWidth, setContainerWidth, isCommandHeld };
+  // Memoized function to get task coordinates with bound parameters
+  const getTaskCoordinates = useMemo(
+    () => (task: TimelineTask) => getTaskCoordinatesUtil(task, dateRows, rowHeight, containerWidth),
+    [dateRows, rowHeight, containerWidth]
+  );
+
+  return { dateRows, containerWidth, setContainerWidth, isCommandHeld, getTaskCoordinates };
 };
 

@@ -6,9 +6,24 @@ interface UseZoomResult {
 }
 
 /**
- * Custom hook for managing zoom state in the timeline.
- * @param containerRef A React ref to the timeline container element.
- * @returns An object with the current zoom level.
+ * Custom hook for managing zoom state and wheel event handling in the timeline.
+ * 
+ * Features:
+ * - Zoom in/out with Ctrl/Cmd + scroll wheel
+ * - Maintains cursor position during zoom (zoom-to-cursor behavior)
+ * - Respects zoom limits (MIN_ZOOM to MAX_ZOOM)
+ * - Preserves scroll position relative to cursor location
+ * - Automatically adjusts scroll position after zoom to keep content centered on cursor
+ * 
+ * @param containerRef A React ref to the timeline container element for event handling
+ * @returns An object containing:
+ *   - zoom: Current zoom level (1.0 = 100%, 0.5 = 50%, 2.0 = 200%)
+ * 
+ * @example
+ * ```tsx
+ * const { zoom } = useZoom(containerRef);
+ * const scaledRowHeight = BASE_ROW_HEIGHT * zoom;
+ * ```
  */
 export const useZoom = (containerRef: React.RefObject<HTMLDivElement>): UseZoomResult => {
   const [zoom, setZoom] = useState(1.0);

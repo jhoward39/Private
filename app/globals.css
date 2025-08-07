@@ -24,6 +24,11 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+  
+  /* Hide scrollbar while keeping scroll functionality */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 @layer components {

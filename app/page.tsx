@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import VerticalTimeline from "./components/VerticalTimeline";
+import VerticalTimeline from "./components/Timeline";
 import CustomCalendar from "./components/CustomCalendar";
 import TaskPieChart from "./components/TaskPieChart";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -69,7 +69,7 @@ function HomeContent() {
 
       {/* Project overview pie chart */}
       {state.dependencyInfo && (
-        <div className={`absolute top-4 right-4 z-[${CONFIG.Z_INDEX.NORMAL_TASK}]`}>
+        <div className={`absolute top-4 right-4 z-[${CONFIG.Z_INDEX.FLOATING_UI}]`}>
           <TaskPieChart
             uncompletedTasks={derived.uncompletedTasks}
             overdueTasks={derived.overdueTasks}

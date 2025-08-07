@@ -22,14 +22,41 @@ interface UseMinimapResult {
 }
 
 /**
- * Custom hook for managing minimap state and interactions.
- * @param containerRef A React ref to the timeline container element.
- * @param minimapRef A React ref to the minimap container element.
- * @param totalHeight The total height of the timeline.
- * @param dateRows An array of date rows containing all tasks.
- * @param rowHeight The current height of each row.
- * @param setContainerWidth A function to set the width of the timeline container.
- * @returns An object with minimap state and functions to update it.
+ * Custom hook for managing minimap navigation and viewport synchronization.
+ * 
+ * Features:
+ * - Proportional viewport indicator that reflects current scroll position
+ * - Task density visualization with dots sized by task count
+ * - Click and drag navigation for quick timeline positioning
+ * - Automatic viewport updates when timeline is scrolled externally
+ * - Responsive resize handling to maintain accuracy
+ * 
+ * @param containerRef A React ref to the timeline container element for scroll tracking
+ * @param minimapRef A React ref to the minimap container element for dimension calculations
+ * @param totalHeight The total height of the timeline content (zoom-scaled)
+ * @param dateRows An array of date rows containing all tasks for dot visualization
+ * @param rowHeight The current height of each row (zoom-scaled)
+ * @param setContainerWidth Function to update container width on resize events
+ * @returns An object containing:
+ *   - scrollTop: Current scroll position tracked by minimap
+ *   - setScrollTop: Function to update scroll position (used by external scroll events)
+ *   - minimapViewport: Calculated viewport indicator position and size
+ *   - taskDots: Array of task dots with positions and counts for visualization
+ *   - handleMinimapMouseDown: Mouse down handler for navigation clicks
+ *   - handleMinimapMouseMove: Mouse move handler for drag navigation
+ *   - handleMinimapMouseUp: Mouse up handler to end drag operations
+ * 
+ * @example
+ * ```tsx
+ * const { minimapViewport, taskDots, setScrollTop } = useMinimap(
+ *   containerRef,
+ *   minimapRef, 
+ *   totalHeight,
+ *   dateRows,
+ *   rowHeight,
+ *   setContainerWidth
+ * );
+ * ```
  */
 export const useMinimap = (
   containerRef: React.RefObject<HTMLDivElement>,

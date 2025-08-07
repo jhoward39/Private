@@ -16,15 +16,47 @@ interface UseDragResult {
 }
 
 /**
- * Custom hook for managing task drag and drop functionality.
- * @param containerRef A React ref to the timeline container element.
- * @param rowHeight The current height of each row.
- * @param dateRows An array of date rows containing all tasks.
- * @param onTaskMove A function to call when a task is moved to a new date.
- * @param onCreateDependency A function to call when a new dependency is created.
- * @param setSelectedTask A function to set the currently selected task.
- * @param setShowTaskModal A function to show or hide the task modal.
- * @returns An object with drag state and functions to update it.
+ * Custom hook for managing task drag and drop functionality with visual feedback.
+ * 
+ * Features:
+ * - Smooth task dragging with mouse position tracking
+ * - Visual feedback during drag (opacity, shadow, size changes)
+ * - Drop target highlighting on date rows
+ * - Dependency creation state management
+ * - Error handling for dependency operations
+ * - Automatic state cleanup on drag completion
+ * 
+ * @param containerRef A React ref to the timeline container element for coordinate calculations
+ * @param rowHeight The current height of each row (zoom-scaled)
+ * @param dateRows An array of date rows containing all tasks for drop target calculation
+ * @param onTaskMove Callback function when a task is moved to a new date
+ * @param onCreateDependency Async callback for creating dependencies between tasks
+ * @param setSelectedTask Function to set the currently selected task for modal display
+ * @param setShowTaskModal Function to show or hide the task modal
+ * @returns An object containing:
+ *   - draggedTask: ID of currently dragged task (null if none)
+ *   - draggedTaskPos: Current mouse position during drag
+ *   - connectingFrom: ID of task selected for dependency creation
+ *   - setConnectingFrom: Function to set dependency source task
+ *   - dependencyError: Error message from failed dependency creation
+ *   - setDependencyError: Function to set dependency error message
+ *   - handleTaskMouseDown: Mouse down handler for starting drag operations
+ *   - handleMouseMove: Mouse move handler for drag position tracking
+ *   - handleMouseUp: Mouse up handler for completing drag operations
+ *   - dropTargetRowIndex: Index of row currently highlighted as drop target
+ * 
+ * @example
+ * ```tsx
+ * const { draggedTask, handleTaskMouseDown, dropTargetRowIndex } = useDrag(
+ *   containerRef,
+ *   rowHeight,
+ *   dateRows,
+ *   onTaskMove,
+ *   onCreateDependency,
+ *   setSelectedTask,
+ *   setShowTaskModal
+ * );
+ * ```
  */
 export const useDrag = (
   containerRef: React.RefObject<HTMLDivElement>,
