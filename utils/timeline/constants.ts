@@ -44,3 +44,9 @@ export const TASK_NODE_HEIGHT = 40;
  * @type {number}
  */
 export const MINIMAP_WIDTH = 10;
+
+/**
+ * The width of the minimap, in pixels + offset.
+ * @type {number}
+ */
+export const SVG_OFFSET = 50;

@@ -150,6 +150,16 @@ const VerticalTimeline: React.FC<VerticalTimelineProps> = ({
   // Zoom handling hook
   const { zoom } = useZoom(containerRef);
 
+  // Sync selectedTask with latest tasks when modal open
+  useEffect(() => {
+    if (showTaskModal && selectedTask) {
+      const updated = tasks.find((t) => t.id === selectedTask.id);
+      if (updated && updated !== selectedTask) {
+        setSelectedTask(updated);
+      }
+    }
+  }, [tasks, showTaskModal, selectedTask]);
+
   // Constants with zoom scaling
   const rowHeight = BASE_ROW_HEIGHT * zoom;
   const taskNodeWidth = TASK_NODE_WIDTH * zoom;

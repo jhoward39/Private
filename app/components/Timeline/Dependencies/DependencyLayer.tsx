@@ -4,7 +4,7 @@ import { useTheme } from "../../../contexts/ThemeContext";
 import DependencyPath from "./DependencyPath";
 import {
   getBoxEdgePointWithDirection,
-  MINIMAP_WIDTH,
+  SVG_OFFSET,
 } from "../../../../utils/timeline";
 import { useTimeline } from "../../../../hooks/timeline";
 
@@ -63,9 +63,8 @@ const DependencyLayer: React.FC<DependencyLayerProps> = ({
 
         // The coordinates are already relative to the timeline container,
         // so we don't need to add the minimap width again here.
-        const TEMP_VISUAL_OFFSET = 16; // A guess to counteract suspected container padding
-        const fromCenter = { x: fromCoords.x + MINIMAP_WIDTH - TEMP_VISUAL_OFFSET, y: fromCoords.y };
-        const toCenter = { x: toCoords.x + MINIMAP_WIDTH - TEMP_VISUAL_OFFSET, y: toCoords.y };
+        const fromCenter = { x: fromCoords.x + SVG_OFFSET, y: fromCoords.y };
+        const toCenter = { x: toCoords.x + SVG_OFFSET, y: toCoords.y };
 
         const fromEdgeInfo = getBoxEdgePointWithDirection(
           fromCenter.x,

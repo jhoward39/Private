@@ -69,7 +69,7 @@ function HomeContent() {
 
       {/* Project overview pie chart */}
       {state.dependencyInfo && (
-        <div className={`absolute top-4 right-4 z-[${CONFIG.Z_INDEX.FLOATING_UI}]`}>
+        <div className={`absolute top-4 right-4 z-[${CONFIG.Z_INDEX.UI_BAR}]`}>
           <TaskPieChart
             uncompletedTasks={derived.uncompletedTasks}
             overdueTasks={derived.overdueTasks}
@@ -88,7 +88,7 @@ function HomeContent() {
       />
 
       {/* Add task bar */}
-      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-[#FFFFF8] dark:bg-gray-900 px-4 py-3 flex gap-2 items-center z-[9999] transition-colors duration-200">
+      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-[#FFFFF8] dark:bg-gray-900 px-4 py-3 flex gap-2 items-center z-[40] transition-colors duration-200">
         <input
           type="text"
           placeholder="add a task..."

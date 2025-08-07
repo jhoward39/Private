@@ -9,9 +9,6 @@ export const CONFIG = {
   TASK_SPACING: 140,
   TASK_VERTICAL_OFFSET: 20,
 
-  // Task Node Dimensions (will be calculated by layout hook)
-  DEFAULT_TASK_WIDTH: 120,
-  DEFAULT_TASK_HEIGHT: 60,
 
   // API & External Services
   PEXELS_RESULTS_PER_PAGE: 1,
@@ -19,6 +16,7 @@ export const CONFIG = {
   // UI Constants
   MODAL_MAX_WIDTH: "2xl", // Tailwind class
   MODAL_MAX_HEIGHT: "80vh",
+  SVG_OFFSET: 50,
 
   // Form Defaults
   DEFAULT_TASK_DURATION: 1,
