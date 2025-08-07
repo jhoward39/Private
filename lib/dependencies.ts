@@ -19,11 +19,15 @@ export interface DependencyGraph {
 /**
  * Build dependency graph from database
  */
-export async function buildDependencyGraph(): Promise<DependencyGraph> {
+export async function buildDependencyGraph(includeDraft = false): Promise<DependencyGraph> {
   const todos = await prisma.todo.findMany({
+    // @ts-ignore - isDraft added via migration
+    where: includeDraft ? undefined : { isDraft: false },
     include: {
-      dependencies: true,
-      dependentTasks: true,
+      // @ts-ignore
+      dependencies: includeDraft ? true : { where: { isDraft: false } },
+      // @ts-ignore
+      dependentTasks: includeDraft ? true : { where: { isDraft: false } },
     },
   });
 
@@ -32,8 +36,12 @@ export async function buildDependencyGraph(): Promise<DependencyGraph> {
 
   // Build nodes
   for (const todo of todos) {
-    const dependencies = todo.dependencies.map((dep: { dependsOnId: number }) => dep.dependsOnId);
-    const dependentTasks = todo.dependentTasks.map((dep: { taskId: number }) => dep.taskId);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const depsArr = (todo as any).dependencies as Array<{ dependsOnId: number }>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const dependentsArr = (todo as any).dependentTasks as Array<{ taskId: number }>;
+    const dependencies = depsArr?.map((d) => d.dependsOnId) || [];
+    const dependentTasks = dependentsArr?.map((d) => d.taskId) || [];
 
     nodes.set(todo.id, {
       id: todo.id,
@@ -249,7 +257,7 @@ export function calculateCriticalPath(graph: DependencyGraph): {
  * Update task scheduling in database
  */
 export async function updateTaskScheduling(): Promise<void> {
-  const graph = await buildDependencyGraph();
+  const graph = await buildDependencyGraph(false);
   const { criticalPathSet, earliestTimes } = calculateCriticalPath(graph);
 
   // Use today as the project start date
@@ -299,7 +307,7 @@ export async function addDependency(taskId: number, dependsOnId: number): Promis
   }
 
   // Check for circular dependencies
-  const graph = await buildDependencyGraph();
+  const graph = await buildDependencyGraph(false);
   if (hasCircularDependency(graph, taskId, dependsOnId)) {
     throw new Error("Adding this dependency would create a circular dependency");
   }
@@ -367,7 +375,7 @@ export async function getAllDependencies() {
  * Get critical path information
  */
 export async function getCriticalPathInfo() {
-  const graph = await buildDependencyGraph();
+  const graph = await buildDependencyGraph(false);
   const { criticalPath, earliestTimes, latestTimes } = calculateCriticalPath(graph);
 
   const criticalPathTasks = criticalPath.map((taskId) => {

@@ -59,6 +59,8 @@ const TaskNode: React.FC<TaskNodeProps> = ({
       key={task.id}
       data-task-id={task.id}
       className={`absolute bg-blue-100 dark:bg-blue-800 border border-blue-300 dark:border-blue-600 rounded px-2 py-1 select-none text-xs transition-colors duration-200 flex items-center justify-center ${
+        task.isDraft ? "border-dashed opacity-60" : ""
+      } ${
         isCommandHeld ? "cursor-pointer" : "cursor-move"
       } ${
         draggedTask === task.id

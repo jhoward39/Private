@@ -39,7 +39,7 @@ export default function TaskPieChart({ uncompletedTasks, overdueTasks }: TaskPie
   };
 
   return (
-    <div className="relative w-28 h-28">
+    <div className="relative w-28 h-28 z-[45]">
       <svg width="112" height="112" viewBox="0 0 112 112" className="transform -rotate-90">
         {/* Background circle */}
         <circle

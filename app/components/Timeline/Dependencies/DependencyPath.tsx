@@ -34,12 +34,15 @@ const DependencyPath: React.FC<DependencyPathProps> = ({
   // A dependency is on the critical path if both connected tasks are.
   const isCriticalPath = fromTask.isOnCriticalPath && toTask.isOnCriticalPath;
 
+  const isDraft = (fromTask as any).isDraft || (toTask as any).isDraft;
+
   return (
     <g key={id}>
       <path
         d={path}
         stroke={isCriticalPath ? "#D97706" : strokeColor}
         strokeWidth={isCriticalPath ? 3 : 2}
+        strokeDasharray={isDraft ? "4 2" : undefined}
         fill="none"
         markerEnd={isCriticalPath ? "url(#critical-arrow-marker)" : "url(#arrow-marker)"}
       />

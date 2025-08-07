@@ -116,6 +116,7 @@ export interface TimelineTask {
   duration: number;
   earliestStartDate?: string;
   isOnCriticalPath: boolean;
+  isDraft?: boolean;
   imageUrl?: string | null;
   done?: boolean;
   dependencies: {
